@@ -1,20 +1,19 @@
 /*
 Copyright © 2024 AVINASH GHADSHI <avinash.ghadshi@netcorecloud.com>
-
 */
 package verify
 
 import (
 	"log"
 	"time"
-	"github.com/spf13/cobra"
+
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
+	"github.com/spf13/cobra"
 )
 
-const SECRETE_KEY string = "MJJ6V4C4GTRXSOSSPD2NNGHW3MOSE53E"
 var (
-	code string
+	code    string
 	secrete string
 )
 
@@ -35,18 +34,17 @@ To validate verify, you can run gauth verify -c OTPCODE command.`,
 
 func init() {
 	VerifyCmd.Flags().StringVarP(&code, "code", "c", "", "One Time Password (OTP) Code")
-        if err := VerifyCmd.MarkFlagRequired("code"); err != nil {
-                log.Println(err.Error())
-        }
+	if err := VerifyCmd.MarkFlagRequired("code"); err != nil {
+		log.Println(err.Error())
+	}
 	VerifyCmd.Flags().StringVarP(&secrete, "secrete", "s", "", "Your secrete token")
-
+	if err := VerifyCmd.MarkFlagRequired("secrete"); err != nil {
+		log.Println(err.Error())
+	}
 }
 
 func verify(code, secrete string) {
 
-	if secrete == "" {
-		secrete = SECRETE_KEY
-	}
 	// Validate only the current code (allowing only current time window)
 	valid, _ := totp.ValidateCustom(code, secrete, time.Now(), totp.ValidateOpts{
 		// Allow only the current code (past and future windows are not valid)
@@ -56,10 +54,10 @@ func verify(code, secrete string) {
 		Digits:    otp.DigitsSix,
 		Algorithm: otp.AlgorithmSHA1,
 	})
-        if valid {
-                log.Print("SUCCESS")
-        } else {
-                log.Print("FAILED")
-        }
+	if valid {
+		log.Print("SUCCESS")
+	} else {
+		log.Print("FAILED")
+	}
 
 }
